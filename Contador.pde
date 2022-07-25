@@ -17,5 +17,6 @@ class Contador extends Entity {
     fill(255);
     textSize(24);
     text("Pacotes em posse: " + player.pacotesColetados + "/3", 0, 0);
+    text("Pacotes entregues: " + player.pacotesEntregues, 0, 36);
   }
 }

@@ -24,7 +24,7 @@ class Pacote extends Entity {
   @Override
   void render() {
     noStroke();
-    fill(255, 255, 255);
+    fill(0, 255, 255);
     rectMode(CENTER);
     rect(0, 0, size, size);
   }

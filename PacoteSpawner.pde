@@ -1,12 +1,14 @@
 class PacoteSpawner extends Entity {
+  final float INTERVALO_DE_SPAWN = 5f;
   float tempoDoUltimoSpawn = Float.POSITIVE_INFINITY;
-  float intervaloDeSpawn = 5f;
   
   @Override
   void update(float deltaTime) {
     tempoDoUltimoSpawn += deltaTime;
     
-    if (tempoDoUltimoSpawn >= intervaloDeSpawn) {
+    if (gameState != GameState.GAMEPLAY) return;
+    
+    if (tempoDoUltimoSpawn >= INTERVALO_DE_SPAWN) {
       tempoDoUltimoSpawn = 0f;
       spawn();
     }

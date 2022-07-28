@@ -7,6 +7,7 @@ float lastUpdateMillis = 0;
 int worldWidth = 3840;
 int worldHeight = 2160;
 boolean drawAABB = false;
+GameState gameState = GameState.MENU;
 
 void keyPressed() {
   if (key == 'w' || key == 'W') PressedKeys.W = true;
@@ -22,6 +23,12 @@ void keyReleased() {
   if (key == 's' || key == 'S') PressedKeys.S = false;
   if (key == 'd' || key == 'D') PressedKeys.D = false;
   if (key == 'c' || key == 'C') PressedKeys.C = false;
+}
+
+void mousePressed() {
+  for (Entity entity : entidades) {
+    entity.aoClicarComMouse();
+  }
 }
 
 void setup() {
@@ -42,6 +49,7 @@ void setup() {
   entidades.add(new GPS());
   entidades.add(new Contador());
   entidades.add(new ZonaDeDespacho());
+  entidades.add(new MenuPrincipal());
 }
 
 void update() {
@@ -98,6 +106,12 @@ void draw() {
   for (Entity entidade : entidades) {
     entidade.setMatrixAndDraw();
   }
+}
+
+enum GameState {
+  MENU,
+  GAMEPLAY,
+  GAME_OVER
 }
 
 // Funções auxiliares

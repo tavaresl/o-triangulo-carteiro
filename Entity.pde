@@ -80,6 +80,7 @@ class Entity {
   void update(float deltaTime) { }
   void render() { }
   void aoColidirCom(Entity outro) { }
+  void aoClicarComMouse() {}
 }
 
 final class Transform {

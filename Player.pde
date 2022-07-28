@@ -25,6 +25,8 @@ class Player extends Entity {
   
   @Override
   void update(float deltaTime) {
+    if (gameState != GameState.GAMEPLAY) return;
+    
     usaColisor = true;
     PVector destino = new PVector();
     

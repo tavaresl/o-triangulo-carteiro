@@ -51,8 +51,13 @@ class Contador extends Entity {
       textSize(24);
       textAlign(LEFT);
 
+      fill(0, 255, 255);
       text("Pacotes em posse: " + player.pacotesColetados + "/3", 0, 0);
+      
+      fill(255, 255, 0);
       text("Pacotes entregues: " + player.pacotesEntregues, 0, 36);
+      
+      fill(255);
       text("Próximo pacote em: " + tempoProxPacote + "s", 0, 72);
       
       textAlign(RIGHT);

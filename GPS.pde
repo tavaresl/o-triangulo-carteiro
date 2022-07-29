@@ -1,27 +1,35 @@
 class GPS extends Entity {
   final float MAIOR_DISTANCIA = sqrt(worldWidth * worldWidth + worldHeight * worldHeight);
-  PVector direcao = new PVector();
-  float distancia = 0f;
+  PVector direcaoPacote = new PVector();
+  PVector direcaoZonaDeDespacho = new PVector();
+  boolean renderizaSetaPacote = false;
+  boolean renderizaSetaZona = false;
+  
+  Pacote pacoteAlvo;
+  ZonaDeDespacho zonaDeDespacho;
   Entity alvo;
 
   @Override
   void update(float deltaTime) {
     ArrayList<Pacote> pacotes = new ArrayList<Pacote>();
-    alvo = null;
+    renderizaSetaPacote = false;
+    renderizaSetaZona = false;
     
     for (Entity entity : entidades) {
       if (entity instanceof Pacote) {
         pacotes.add((Pacote) entity);
       }
     }
-    float menorDistancia = Float.POSITIVE_INFINITY;
-    float anguloParaAlvo = 0;
     
     Player player = (Player) parent;
 
     if (!player.estaLotado()) {
+      renderizaSetaPacote = true;
+      alvo = null;
       Pacote pacoteMaisProximo = null;
-    
+      float menorDistancia = Float.POSITIVE_INFINITY;
+      float anguloParaPacote = 0;
+      
       for (Pacote pacote : pacotes) {
         float distanciaAtePacote = parent.transform.position.dist(pacote.transform.position);
         
@@ -34,40 +42,59 @@ class GPS extends Entity {
       if (pacoteMaisProximo == null) return;
 
       alvo = pacoteMaisProximo;
-      anguloParaAlvo = PVector.sub(pacoteMaisProximo.transform.position, parent.transform.position).heading();
-    } else {
-      ZonaDeDespacho zonaDeDespacho = (ZonaDeDespacho) entidades.stream().filter(e -> e instanceof ZonaDeDespacho).findFirst().orElse(null);
-      
-      alvo = zonaDeDespacho;
-      menorDistancia = parent.transform.position.dist(zonaDeDespacho.transform.position);
-      anguloParaAlvo = PVector.sub(zonaDeDespacho.transform.position, parent.transform.position).heading();
+      anguloParaPacote = PVector.sub(pacoteMaisProximo.transform.position, parent.transform.position).heading();
+      direcaoPacote = PVector.fromAngle(anguloParaPacote).rotate(-parent.transform.rotation);
     }
+
+    ZonaDeDespacho zonaDeDespacho = (ZonaDeDespacho) entidades.stream().filter(e -> e instanceof ZonaDeDespacho).findFirst().orElse(null);
     
-    
-    direcao = PVector.fromAngle(anguloParaAlvo).rotate(-parent.transform.rotation);
-    distancia = menorDistancia;
+    if (zonaDeDespacho != null && player.pacotesColetados > 0) {
+      renderizaSetaZona = true;
+      float anguloParaZona = 0;
+      anguloParaZona = PVector.sub(zonaDeDespacho.transform.position, parent.transform.position).heading();
+      direcaoZonaDeDespacho = PVector.fromAngle(anguloParaZona).rotate(-parent.transform.rotation);
+    }
   }
   
   @Override
   void render() {
-    if (alvo == null) return;
-    
-    float[] corDoGps = alvo instanceof ZonaDeDespacho ? new float[] { 255, 255, 0 } : new float[] { 0, 255, 255 };
+    float[] corDoGpsPacote = new float[] { 0, 255, 255 };
+    float[] corDoGpsZonaDeDespacho = new float[] { 255, 255, 0 };
 
     noFill();
-    stroke(corDoGps[0], corDoGps[1], corDoGps[2]);
-    arc(0, 0, 100, 100, direcao.heading() - radians(22.5), direcao.heading() + radians(22.5));
     
-    pushMatrix();
-      PVector ponteiro = direcao.copy().setMag(53);
-      translate(ponteiro.x, ponteiro.y);
-      rotate(direcao.heading());
+    if (renderizaSetaPacote) {
+      stroke(corDoGpsPacote[0], corDoGpsPacote[1], corDoGpsPacote[2]);
+      arc(0, 0, 100, 100, direcaoPacote.heading() - radians(22.5), direcaoPacote.heading() + radians(22.5));
       
-      pushStyle();
-        fill(corDoGps[0], corDoGps[1], corDoGps[2]);
-        noStroke();
-        regularPolygon(0, 0, 6, 3);
-      popStyle();
-    popMatrix();
+      pushMatrix();
+        PVector ponteiro = direcaoPacote.copy().setMag(53);
+        translate(ponteiro.x, ponteiro.y);
+        rotate(direcaoPacote.heading());
+        
+        pushStyle();
+          fill(corDoGpsPacote[0], corDoGpsPacote[1], corDoGpsPacote[2]);
+          noStroke();
+          regularPolygon(0, 0, 6, 3);
+        popStyle();
+      popMatrix();
+    }
+    
+    if (renderizaSetaZona) {
+      stroke(corDoGpsZonaDeDespacho[0], corDoGpsZonaDeDespacho[1], corDoGpsZonaDeDespacho[2]);
+      arc(0, 0, 160, 160, direcaoZonaDeDespacho.heading() - radians(22.5), direcaoZonaDeDespacho.heading() + radians(22.5));
+      
+      pushMatrix();
+        PVector ponteiroZona = direcaoZonaDeDespacho.copy().setMag(83);
+        translate(ponteiroZona.x, ponteiroZona.y);
+        rotate(direcaoZonaDeDespacho.heading());
+        
+        pushStyle();
+          fill(corDoGpsZonaDeDespacho[0], corDoGpsZonaDeDespacho[1], corDoGpsZonaDeDespacho[2]);
+          noStroke();
+          regularPolygon(0, 0, 6, 3);
+        popStyle();
+      popMatrix();
+    }
   }
 }

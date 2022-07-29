@@ -15,7 +15,6 @@ class MenuGameOver extends Entity {
     Player player = (Player) entidades.stream().filter(e -> e instanceof Player).findFirst().orElse(null);
     
     if (player != null) {
-      println(player.pacotesEntregues);
       pacotesEntregues = player.pacotesEntregues;
       player.destroy();
     }

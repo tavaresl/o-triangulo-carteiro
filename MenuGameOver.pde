@@ -1,6 +1,6 @@
-class MenuPrincipal extends Entity {
+class MenuGameOver extends Entity {
   String[] menuItems = {
-    "Começar",
+    "Recomeçar",
     "Sair"
   };
   float menuItemWidth = 200;
@@ -8,14 +8,23 @@ class MenuPrincipal extends Entity {
   float menuItemMargin = 30;
   
   int menuItemSelecionado = -1;
+  int pacotesEntregues = 0;
   
   @Override
   void update(float deltaTime) {
+    Player player = (Player) entidades.stream().filter(e -> e instanceof Player).findFirst().orElse(null);
+    
+    if (player != null) {
+      println(player.pacotesEntregues);
+      pacotesEntregues = player.pacotesEntregues;
+      player.destroy();
+    }
+    
     transform.position.x = camera.transform.position.x;
     transform.position.y = camera.transform.position.y;
     menuItemSelecionado = -1;
     
-    if (gameState != GameState.MENU) return;
+    if (gameState != GameState.GAME_OVER) return;
     
     for (int i = 0; i < menuItems.length; i++) {
       if (mouseX <= width / 2 - menuItemWidth / 2 || mouseX >= width / 2 + menuItemWidth / 2) {
@@ -53,17 +62,30 @@ class MenuPrincipal extends Entity {
     rectMode(CENTER);
     rect(0, 0, width, height);
     
-    // Renderiza título do jogo
+    // Renderiza "Fim de jogo"
     pushMatrix();
-      translate(0, -150);
+      translate(0, -200);
       
-      textSize(72);
+      textSize(48);
       textAlign(CENTER, CENTER);
       
       noStroke();
       fill(255);
       
-      text("O Triângulo Carteiro", 0, 0);
+      text("Fim de jogo", 0, 0);
+    popMatrix();
+
+    // Renderiza total de pacotes entregues
+    pushMatrix();
+      translate(0, -150);
+      
+      textSize(24);
+      textAlign(CENTER, CENTER);
+      
+      noStroke();
+      fill(255);
+      
+      text("Você entregou " + pacotesEntregues + (pacotesEntregues == 1 ? " pacote" : " pacotes"), 0, 0);
     popMatrix();
     
     // Renderiza botões do menu
@@ -90,15 +112,10 @@ class MenuPrincipal extends Entity {
   }
   
   private void aoClicarNoBotaoDeComecar() {
-    gameState = GameState.GAMEPLAY;
+    gameState = GameState.MENU;
 
     destroy();
-    new Contador().create();
-  
-    Player player = new Player();
-    player.transform.position.x = worldWidth / 2;
-    player.transform.position.y = worldHeight / 2;
-    player.create();
+    new MenuPrincipal().create();
   }
   
   private void aoClicarNoBotaoDeSair() {

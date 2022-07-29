@@ -1,5 +1,5 @@
 class PacoteSpawner extends Entity {
-  final float INTERVALO_DE_SPAWN = 5f;
+  final float INTERVALO_DE_SPAWN = 3f;
   float tempoDoUltimoSpawn = Float.POSITIVE_INFINITY;
   
   @Override

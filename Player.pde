@@ -26,6 +26,13 @@ class Player extends Entity {
   @Override
   void update(float deltaTime) {
     if (gameState != GameState.GAMEPLAY) return;
+
+    GPS gps = (GPS) children.stream().filter(e -> e instanceof GPS).findFirst().orElse(null);
+
+    if (gps == null) {
+      gps = new GPS();
+      gps.bindTo(this);
+    }
     
     usaColisor = true;
     PVector destino = new PVector();
@@ -55,11 +62,18 @@ class Player extends Entity {
     camera.transform.position.y = transform.position.y;
     
     // Distribui pacotes coletados ao redor do player
-    if (children.size() > 0) {
-      float anguloEntrePacotes = TWO_PI / children.size();
+    ArrayList<Pacote> pacotes = new ArrayList<Pacote>();
+    for (int i = 0; i < children.size(); i++) {
+      if (children.get(i) instanceof Pacote)
+        pacotes.add((Pacote) children.get(i));
+    }
+    
+    if (pacotes.size() > 0) {
+      float anguloEntrePacotes = TWO_PI / pacotes.size();
       
-      for (int i = 0; i < children.size(); i++) {
-        children.get(i).transform.position = new PVector(50, 0).rotate(anguloEntrePacotes * i + PI);
+      for (int i = 0; i < pacotes.size(); i++) {
+        if (pacotes.get(i) instanceof Pacote)
+          pacotes.get(i).transform.position = new PVector(50, 0).rotate(anguloEntrePacotes * i + PI);
       }
     }
   }
@@ -69,6 +83,7 @@ class Player extends Entity {
     if (outro instanceof Pacote) {
       if (pacotesColetados < 3) {
         pacotesColetados++;
+        outro.transform.position.sub(transform.position);
         outro.bindTo(this);
       }
     } else if (outro instanceof ZonaDeDespacho) {
@@ -76,7 +91,8 @@ class Player extends Entity {
       pacotesColetados = 0;
       
       for (int i = children.size() - 1; i >= 0; i--) {
-        release(children.get(i));
+        if (children.get(i) instanceof Pacote)
+          release(children.get(i));
       }
     }
   }

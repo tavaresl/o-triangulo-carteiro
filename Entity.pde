@@ -12,11 +12,11 @@ class Entity {
       rotate(transform.rotation);
       
       pushStyle();
-      render();
-      
-      for (Entity child : children) {
-        child.setMatrixAndDraw();
-      }
+        render();
+        
+        for (Entity child : children) {
+          child.setMatrixAndDraw();
+        }
       popStyle();
     popMatrix();
       
@@ -43,6 +43,10 @@ class Entity {
 
   final void destroy() {
     destroyed = true;
+    
+    for (Entity child : children) {
+      child.destroy();
+    }
   }
   
   final void updateSelfAndChildren(float deltaTime) {
@@ -63,7 +67,6 @@ class Entity {
     this.parent = parent;
     parent.children.add(this);
     
-    transform.position.sub(parent.transform.position);
   }
   
   final void release(Entity child) {

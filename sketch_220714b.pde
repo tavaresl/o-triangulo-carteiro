@@ -40,14 +40,7 @@ void setup() {
   entidades = new ArrayList<Entity>();
   lastUpdateMillis = millis();
   
-  Player player = new Player();
-  player.transform.position.x = worldWidth / 2;
-  player.transform.position.y = worldHeight / 2;
-  
   entidades.add(new PacoteSpawner());
-  entidades.add(player);
-  entidades.add(new GPS());
-  entidades.add(new Contador());
   entidades.add(new ZonaDeDespacho());
   entidades.add(new MenuPrincipal());
 }

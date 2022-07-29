@@ -2,21 +2,12 @@ class GPS extends Entity {
   final float MAIOR_DISTANCIA = sqrt(worldWidth * worldWidth + worldHeight * worldHeight);
   PVector direcao = new PVector();
   float distancia = 0f;
-  Player player;
   Entity alvo;
 
   @Override
   void update(float deltaTime) {
-    if (player == null) {
-      player = (Player) entidades.stream().filter(e -> e instanceof Player).findFirst().orElse(null);
-    }
-    
-    alvo = null;
-    
     ArrayList<Pacote> pacotes = new ArrayList<Pacote>();
-    
-    transform.position.x = camera.transform.position.x;
-    transform.position.y = camera.transform.position.y;
+    alvo = null;
     
     for (Entity entity : entidades) {
       if (entity instanceof Pacote) {
@@ -25,13 +16,15 @@ class GPS extends Entity {
     }
     float menorDistancia = Float.POSITIVE_INFINITY;
     float anguloParaAlvo = 0;
+    
+    Player player = (Player) parent;
 
     if (!player.estaLotado()) {
       Pacote pacoteMaisProximo = null;
     
       for (Pacote pacote : pacotes) {
-        float distanciaAtePacote = transform.position.dist(pacote.transform.position);
-  
+        float distanciaAtePacote = parent.transform.position.dist(pacote.transform.position);
+        
         if (distanciaAtePacote < menorDistancia) {
           pacoteMaisProximo = pacote;
           menorDistancia = distanciaAtePacote;
@@ -41,17 +34,17 @@ class GPS extends Entity {
       if (pacoteMaisProximo == null) return;
 
       alvo = pacoteMaisProximo;
-      anguloParaAlvo = PVector.sub(pacoteMaisProximo.transform.position, transform.position).heading();
+      anguloParaAlvo = PVector.sub(pacoteMaisProximo.transform.position, parent.transform.position).heading();
     } else {
       ZonaDeDespacho zonaDeDespacho = (ZonaDeDespacho) entidades.stream().filter(e -> e instanceof ZonaDeDespacho).findFirst().orElse(null);
       
       alvo = zonaDeDespacho;
-      menorDistancia = transform.position.dist(zonaDeDespacho.transform.position);
-      anguloParaAlvo = PVector.sub(zonaDeDespacho.transform.position, transform.position).heading();
+      menorDistancia = parent.transform.position.dist(zonaDeDespacho.transform.position);
+      anguloParaAlvo = PVector.sub(zonaDeDespacho.transform.position, parent.transform.position).heading();
     }
     
     
-    direcao = PVector.fromAngle(anguloParaAlvo);
+    direcao = PVector.fromAngle(anguloParaAlvo).rotate(-parent.transform.rotation);
     distancia = menorDistancia;
   }
   
